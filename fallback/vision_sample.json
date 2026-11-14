@@ -1,0 +1,10 @@
+{
+  "hazards": [
+    {"bbox": [120, 80, 220, 170], "cls": "hazard", "confidence": 0.91},
+    {"bbox": [300, 210, 340, 250], "cls": "hazard", "confidence": 0.78}
+  ],
+  "image_width": 640,
+  "image_height": 480,
+  "inference_ms": 42.5,
+  "device": "cpu"
+}

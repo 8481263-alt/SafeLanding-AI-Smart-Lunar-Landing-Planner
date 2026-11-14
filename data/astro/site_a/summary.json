@@ -1,0 +1,63 @@
+{
+  "start_utc": "2026-11-14T00:00:00Z",
+  "end_utc": "2026-11-21T00:00:00Z",
+  "period_hours": 168.0,
+  "sun": {
+    "visible_hours": 168.0,
+    "visible_fraction": 1.0,
+    "longest_dark_hours": 0.0,
+    "windows": [
+      {
+        "start_utc": "2026-11-14T00:00:00Z",
+        "end_utc": "2026-11-21T00:00:00Z",
+        "duration_h": 168.0
+      }
+    ]
+  },
+  "earth": {
+    "visible_hours": 87.9028,
+    "visible_fraction": 0.523231,
+    "longest_no_direct_los_hours": 80.0972,
+    "windows": [
+      {
+        "start_utc": "2026-11-17T08:05:50Z",
+        "end_utc": "2026-11-21T00:00:00Z",
+        "duration_h": 87.9026
+      }
+    ]
+  },
+  "sun_and_earth": {
+    "overlap_hours": 87.9028,
+    "windows": [
+      {
+        "start_utc": "2026-11-17T08:05:50Z",
+        "end_utc": "2026-11-21T00:00:00Z",
+        "duration_h": 87.9028
+      }
+    ]
+  },
+  "site": {
+    "longitude_east_deg": 0.0,
+    "latitude_deg": -89.5,
+    "height_above_reference_ellipsoid_km": 0
+  },
+  "model": {
+    "source": "NASA/JPL Horizons",
+    "sun_target_id": "10",
+    "earth_target_id": "399",
+    "observer": "coord@301",
+    "coordinates": "geodetic, east-positive longitude",
+    "horizon": "IDEALIZED ZERO-DEGREE HORIZON (NO TERRAIN)",
+    "clearance_deg": 0,
+    "sampling_step_minutes": 30,
+    "window_boundary_method": "linear interpolation between samples; step-limited",
+    "sun_query": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%2710%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&OBJ_DATA=%27NO%27&CENTER=%27coord%40301%27&COORD_TYPE=%27GEODETIC%27&SITE_COORD=%270.0000000%2C-89.5000000%2C0.00000%27&START_TIME=%272026-11-14+00%3A00%27&STOP_TIME=%272026-11-21+00%3A00%27&STEP_SIZE=%2730+m%27&QUANTITIES=%274%27&APPARENT=%27AIRLESS%27&TIME_TYPE=%27UT%27&TIME_ZONE=%27%2B00%3A00%27&TIME_DIGITS=%27MINUTES%27&CAL_FORMAT=%27CAL%27&CSV_FORMAT=%27YES%27&ANG_FORMAT=%27DEG%27&ELEV_CUT=%27-90%27&SKIP_DAYLT=%27NO%27",
+    "earth_query": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%27399%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&OBJ_DATA=%27NO%27&CENTER=%27coord%40301%27&COORD_TYPE=%27GEODETIC%27&SITE_COORD=%270.0000000%2C-89.5000000%2C0.00000%27&START_TIME=%272026-11-14+00%3A00%27&STOP_TIME=%272026-11-21+00%3A00%27&STEP_SIZE=%2730+m%27&QUANTITIES=%274%27&APPARENT=%27AIRLESS%27&TIME_TYPE=%27UT%27&TIME_ZONE=%27%2B00%3A00%27&TIME_DIGITS=%27MINUTES%27&CAL_FORMAT=%27CAL%27&CSV_FORMAT=%27YES%27&ANG_FORMAT=%27DEG%27&ELEV_CUT=%27-90%27&SKIP_DAYLT=%27NO%27",
+    "caveats": [
+      "Line-of-sight geometry only, not actual link availability",
+      "Sun center visible is not solar-panel power",
+      "Terrain not included unless horizon CSV is supplied",
+      "Lunar terrain data and Horizons site reference frames require careful alignment"
+    ]
+  }
+}
