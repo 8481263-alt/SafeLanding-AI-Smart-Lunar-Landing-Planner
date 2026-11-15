@@ -1,10 +1,14 @@
+"""Єдиний контракт даних між модулями (довідкові схеми для документації API)."""
 from typing import List, Optional
+
 from pydantic import BaseModel
+
 
 class Hazard(BaseModel):
     bbox: List[float]          # [x1, y1, x2, y2] у пікселях оригінального зображення
     cls: str                   # "hazard" (поточна модель) або crater | rock | shadow
     confidence: float          # 0..1
+
 
 class VisionResult(BaseModel):
     hazards: List[Hazard]
@@ -12,6 +16,7 @@ class VisionResult(BaseModel):
     image_height: int
     inference_ms: float
     device: str                # cpu | npu
+
 
 class SunEarthPoint(BaseModel):
     time_utc: str
@@ -21,6 +26,7 @@ class SunEarthPoint(BaseModel):
     earth_azimuth_deg: float
     sun_visible: bool
     earth_visible: bool
+
 
 class SiteReport(BaseModel):
     site_id: str
@@ -32,6 +38,7 @@ class SiteReport(BaseModel):
     simultaneous_hours: float
     horizon_assumption: str
     caveats: List[str]
+
 
 class LandingRecommendation(BaseModel):
     point_xy: Optional[List[int]]

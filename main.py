@@ -1,3 +1,4 @@
+"""SafeLanding AI — backend API."""
 import json
 import os
 from pathlib import Path

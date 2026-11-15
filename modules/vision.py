@@ -1,3 +1,4 @@
+"""Нейромережа HazardNet (Людина 1): карта небезпек -> рамки для API."""
 import io
 import time
 from pathlib import Path
@@ -13,6 +14,7 @@ ROOT = Path(__file__).resolve().parent.parent
 _model = None
 _size = None
 
+
 def _load():
     """Модель вантажиться один раз, а не на кожен запит."""
     global _model, _size
@@ -23,6 +25,7 @@ def _load():
         model.eval()
         _model, _size = model, ckpt["config"]["size"]
     return _model, _size
+
 
 def prepare_input(image: Image.Image, size: int) -> torch.Tensor:
     """Готує вхід [1, 3, size, size] так само, як настільне демо (код Людини 1)."""
@@ -39,6 +42,7 @@ def prepare_input(image: Image.Image, size: int) -> torch.Tensor:
     std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
     normalized = (pixels - mean) / std
     return torch.from_numpy(normalized).permute(2, 0, 1).unsqueeze(0)
+
 
 def predict(image_bytes: bytes, threshold: float = 0.5, min_area: int = 30) -> dict:
     model, size = _load()

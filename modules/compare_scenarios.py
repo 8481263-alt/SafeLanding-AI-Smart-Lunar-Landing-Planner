@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+"""Side-by-side visibility comparison; never collapses mission trade-offs into a fake score."""
 import argparse
 import json
 from pathlib import Path

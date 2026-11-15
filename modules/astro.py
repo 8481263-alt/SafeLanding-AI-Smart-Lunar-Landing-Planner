@@ -1,3 +1,4 @@
+"""Сонце/Земля: читає готові розрахунки JPL Horizons з data/astro/<site_id>/."""
 import csv
 import json
 from pathlib import Path
@@ -5,6 +6,7 @@ from pathlib import Path
 from fastapi import HTTPException
 
 DATA = Path(__file__).resolve().parent.parent / "data" / "astro"
+
 
 def _load(site_id: str):
     folder = DATA / site_id
@@ -55,6 +57,7 @@ def compute_series(site_id: str, start: str, end: str) -> dict:
         "horizon_assumption": summary["model"]["horizon"],
         "caveats": summary["model"]["caveats"],
     }
+
 
 def compare_sites(a: str, b: str) -> dict:
     from modules.compare_scenarios import compare
