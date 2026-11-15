@@ -1,12 +1,12 @@
-"""Єдиний контракт даних між модулями (довідкові схеми для документації API)."""
+"""Shared data contracts for the API."""
 from typing import List, Optional
 
 from pydantic import BaseModel
 
 
 class Hazard(BaseModel):
-    bbox: List[float]          # [x1, y1, x2, y2] у пікселях оригінального зображення
-    cls: str                   # "hazard" (поточна модель) або crater | rock | shadow
+    bbox: List[float]          # [x1, y1, x2, y2] in original image pixels
+    cls: str                   # "hazard" (current model) or crater | rock | shadow
     confidence: float          # 0..1
 
 

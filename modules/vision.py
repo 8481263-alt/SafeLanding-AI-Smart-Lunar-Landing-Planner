@@ -1,4 +1,4 @@
-"""Нейромережа HazardNet (Людина 1): карта небезпек -> рамки для API."""
+"""Convert HazardNet prediction maps to bounding boxes for the API."""
 import io
 import time
 from pathlib import Path
@@ -8,7 +8,7 @@ import torch
 from PIL import Image
 from scipy import ndimage
 
-from train_hazard import HazardNet  # файл від Людини 1, лежить у корені проєкту
+from train_hazard import HazardNet  # Team member 1 supplies this file in the repository root.
 
 ROOT = Path(__file__).resolve().parent.parent
 _model = None
@@ -16,7 +16,7 @@ _size = None
 
 
 def _load():
-    """Модель вантажиться один раз, а не на кожен запит."""
+    """Load the model once and reuse it across requests."""
     global _model, _size
     if _model is None:
         ckpt = torch.load(ROOT / "training/best.pt", map_location="cpu", weights_only=False)
@@ -28,7 +28,7 @@ def _load():
 
 
 def prepare_input(image: Image.Image, size: int) -> torch.Tensor:
-    """Готує вхід [1, 3, size, size] так само, як настільне демо (код Людини 1)."""
+    """Prepare the [1, 3, size, size] input used by the desktop demo."""
     gray_rgb = image.convert("RGB").convert("L").convert("RGB")
     scale = min(size / image.width, size / image.height)
     width = max(1, round(image.width * scale))
@@ -55,7 +55,7 @@ def predict(image_bytes: bytes, threshold: float = 0.5, min_area: int = 30) -> d
     with torch.inference_mode():
         hazard = model(x).sigmoid()[0, 0].numpy()  # [size, size], 0..1
 
-    # Параметри letterbox: повертаємо координати в оригінальне зображення
+    # Reverse the letterbox transform to recover original image coordinates.
     scale = min(size / w, size / h)
     ox = (size - max(1, round(w * scale))) // 2
     oy = (size - max(1, round(h * scale))) // 2

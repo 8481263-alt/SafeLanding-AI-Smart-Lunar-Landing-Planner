@@ -4,5 +4,5 @@ pydantic
 python-multipart
 torch
 pillow
-numpy
 scipy
+-r requirements-planner.txt

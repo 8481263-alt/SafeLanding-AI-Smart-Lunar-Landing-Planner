@@ -1,15 +1,15 @@
-"""Тимчасова заміна модуля safety_algorithm (поки немає коду Людини 4).
+"""Fallback landing-zone algorithm.
 
-Інтерфейс — той, що очікує frontend/app.py:
+Interface expected by frontend/app.py:
     analyze_landing_zones(request: dict) -> dict
 
 request: image_width, image_height, hazards=[{bbox_xyxy, type, confidence}],
          landing_radius_px, safety_margin_px, top_n
 result:  status ("ok" | "no_safe_zone"), candidates=[{x, y, clearance_px, score}], warnings=[str]
 
-Логіка: центр модуля дозволений там, де відстань до найближчої небезпеки не менша
-за радіус + запас, а до краю кадру — не менша за радіус. Кандидати вибираються за
-найбільшим просвітом, кола не перекриваються. Це оцінка по одному 2D-кадру.
+The lander centre must clear the nearest hazard by its radius plus the safety
+margin and the frame edge by its radius. Pick non-overlapping candidates in
+order of greatest clearance. This estimate uses a single 2D frame.
 """
 from __future__ import annotations
 
@@ -29,7 +29,7 @@ def analyze_landing_zones(request: dict) -> dict:
     warnings = ["Stand-in algorithm (distance transform on one 2D frame); "
                 "slope and undetected hazards are not considered."]
 
-    k = min(1.0, 400.0 / max(w, h))                       # рахуємо на зменшеній сітці
+    k = min(1.0, 400.0 / max(w, h))  # Work on a reduced grid.
     gw, gh = max(1, round(w * k)), max(1, round(h * k))
     free = np.ones((gh, gw), dtype=bool)
     for hz in request.get("hazards", []):
@@ -41,10 +41,10 @@ def analyze_landing_zones(request: dict) -> dict:
         dist_hz = np.full((gh, gw), np.inf)
         warnings.append("No hazards were detected in the frame.")
     else:
-        dist_hz = ndimage.distance_transform_edt(free) / k          # у пікселях оригіналу
+        dist_hz = ndimage.distance_transform_edt(free) / k  # In original image pixels.
 
     ys, xs = np.mgrid[0:gh, 0:gw]
-    cx, cy = (xs + 0.5) / k, (ys + 0.5) / k                       # центри клітинок, пікселі оригіналу
+    cx, cy = (xs + 0.5) / k, (ys + 0.5) / k  # Grid cell centres in original image pixels.
     dist_edge = np.minimum.reduce([cx, cy, w - cx, h - cy])
     clearance = np.minimum(dist_hz, dist_edge)
     valid = (dist_hz >= need) & (dist_edge >= radius) & free
@@ -59,7 +59,7 @@ def analyze_landing_zones(request: dict) -> dict:
         extra = max(0.0, c - need) / max(need, 1e-6)
         candidates.append({"x": float(cx[iy, ix]), "y": float(cy[iy, ix]),
                            "clearance_px": c, "score": 100.0 * extra / (1.0 + extra)})
-        valid &= np.hypot(cx - cx[iy, ix], cy - cy[iy, ix]) >= 2 * radius   # кола не перекриваються
+        valid &= np.hypot(cx - cx[iy, ix], cy - cy[iy, ix]) >= 2 * radius  # Keep candidate circles disjoint.
 
     return {"status": "ok" if candidates else "no_safe_zone",
             "candidates": candidates, "warnings": warnings}
