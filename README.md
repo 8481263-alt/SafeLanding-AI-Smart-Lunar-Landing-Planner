@@ -8,7 +8,7 @@ SafeLanding AI combines NASA/JPL ephemerides with lunar terrain to help choose w
 
 ## Project video
 
-[![Lunar lander render with Earth above the horizon. Open the project video.](docs/media/lander-render.png)](docs/media/project.mp4?raw=true)
+[![SafeLanding AI title card with the lunar lander and Earth. Open the project video.](docs/media/lander-render.png)](docs/media/project.mp4?raw=true)
 
 [Open or download the project video (MP4, 30 seconds, 47 MiB)](docs/media/project.mp4?raw=true)
 
