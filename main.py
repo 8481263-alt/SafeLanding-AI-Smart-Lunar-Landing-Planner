@@ -1,9 +1,10 @@
 """SafeLanding AI — backend API."""
 import json
 import os
+from dataclasses import asdict
 from pathlib import Path
 
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from schemas import SiteReport, VisionResult
@@ -37,10 +38,10 @@ def health():
 
 @app.post("/api/vision/analyze", response_model=VisionResult)
 async def analyze(file: UploadFile = File(...)):
-    """Аналіз зображення нейромережею (Людина 1)."""
+    """Analyze an image with the neural-network detector."""
     if USE_FALLBACK:
         return load_fallback("vision_sample")
-    from modules.vision import predict  # імпортується лише тут, бо torch важкий
+    from modules.vision import predict  # Load PyTorch only for vision requests.
 
     data = await file.read()
     return predict(data)
@@ -48,7 +49,7 @@ async def analyze(file: UploadFile = File(...)):
 
 @app.get("/api/sites/{site_id}/sun-earth", response_model=SiteReport)
 def sun_earth(site_id: str, start: str = "2026-11-14", end: str = "2026-11-21"):
-    """Положення Сонця й Землі та вікна видимості (Людина 3). site_id: site_a | site_b."""
+    """Return Sun and Earth positions and visibility windows for Site A or B."""
     if USE_FALLBACK:
         return load_fallback(f"sun_earth_{site_id}")
     from modules.astro import compute_series
@@ -58,7 +59,43 @@ def sun_earth(site_id: str, start: str = "2026-11-14", end: str = "2026-11-21"):
 
 @app.get("/api/compare")
 def compare(a: str = "site_a", b: str = "site_b"):
-    """Порівняння двох ділянок за однаковий період."""
+    """Compare two sites over the same period."""
     from modules.astro import compare_sites
 
     return compare_sites(a, b)
+
+
+@app.get("/api/planner/sites")
+def planner_sites():
+    """List catalogued lunar locations and coordinate sources."""
+    from modules.planner import SITES
+
+    return [asdict(site) for site in SITES.values()]
+
+
+@app.get("/api/planner/visibility")
+def planner_visibility(
+    start: str, end: str, site_id: str | None = None,
+    lat: float | None = None, lon: float | None = None,
+    step_minutes: int = 30, horizon: str = "auto",
+):
+    """Plan from UTC timestamps using a catalog ID or east-positive coordinates."""
+    from modules.lunar_visibility import parse_utc
+    from modules.planner import SITES, Site, plan_visibility
+
+    if site_id is not None:
+        if lat is not None or lon is not None:
+            raise HTTPException(422, "Choose a site ID or supply both coordinates.")
+        if site_id not in SITES:
+            raise HTTPException(404, f"Unknown lunar site: {site_id}")
+        site = SITES[site_id]
+    elif lat is not None and lon is not None:
+        site = Site("custom", "Custom coordinates", lat, lon, "Custom")
+    else:
+        raise HTTPException(422, "Choose a site ID or supply both coordinates.")
+    try:
+        return plan_visibility(site, parse_utc(start), parse_utc(end), step_minutes, horizon)
+    except (ValueError, OverflowError) as exc:
+        raise HTTPException(422, str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(503, str(exc)) from exc

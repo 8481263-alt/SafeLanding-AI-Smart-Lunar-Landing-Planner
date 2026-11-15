@@ -1,4 +1,4 @@
-"""Сонце/Земля: читає готові розрахунки JPL Horizons з data/astro/<site_id>/."""
+"""Read archived Sun and Earth ephemerides from data/astro/<site_id>/."""
 import csv
 import json
 from pathlib import Path
@@ -21,7 +21,7 @@ def _load(site_id: str):
 
 def compute_series(site_id: str, start: str, end: str) -> dict:
     summary, rows = _load(site_id)
-    if len(end) == 10:  # "2026-11-21" -> включно до кінця доби
+    if len(end) == 10:  # Include the entire UTC day for date-only end values.
         end += "T23:59:59Z"
     step_h = summary["model"]["sampling_step_minutes"] / 60
 
